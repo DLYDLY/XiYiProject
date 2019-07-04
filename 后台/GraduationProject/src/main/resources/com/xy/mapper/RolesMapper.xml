@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xy.mapper.RolesMapper">
+    <select id="selectQuanxian" resultType="arrayPojo" parameterType="string">
+        select roleId from biye_admin_role where adminId=#{adminId}
+    </select>
+
+
+    <select id="selectAll" resultType="biyeRoles">
+        select * from biye_roles
+    </select>
+
+    <insert id="giveSoles" parameterType="biyeAdminRole">
+        insert into biye_admin_role(adminId,roleId) values(#{adminId},#{roleId});
+    </insert>
+
+    <select id="selectRoleById" parameterType="string" resultType="biyeRoles">
+        select
+        biye_admin.adminName,
+        biye_roles.roleName
+        from biye_admin_role
+        left join  biye_admin
+        on  biye_admin.adminId = biye_admin_role.adminId
+        left join biye_roles
+        on biye_roles.roleId = biye_admin_role.roleId
+        where biye_admin.adminId = #{adminId}
+    </select>
+
+    <select id="selectAdminRoles" resultMap="selectAdminRolesMap">
+        select
+        biye_admin.adminId ,
+        biye_admin.adminName ,
+        biye_roles.roleId ,
+        biye_roles.roleName
+        from biye_admin_role
+        right join biye_admin
+        on biye_admin_role.adminId = biye_admin.adminId
+        left join biye_roles
+        on biye_roles.roleId = biye_admin_role.roleId
+    </select>
+    
+    <resultMap id="selectAdminRolesMap" type="biyeAdmin">
+        <id property="adminId" column="adminId"></id>
+        <result property="adminName" column="adminName"></result>
+
+        <collection property="roles" ofType="BiyeRoles">
+            <id property="roleId" column="roleId"></id>
+            <result property="roleName" column="roleName"></result>
+        </collection>
+    </resultMap>
+
+    <insert id="addQuanxian" parameterType="string">
+          insert into biye_admin_role(roleId,adminId) values (#{roleId},#{adminId})
+    </insert>
+
+    <delete id="deleteQuanxian" parameterType="string">
+        delete from biye_admin_role where adminId = #{adminId} and roleId = #{roleId}
+    </delete>
+</mapper>

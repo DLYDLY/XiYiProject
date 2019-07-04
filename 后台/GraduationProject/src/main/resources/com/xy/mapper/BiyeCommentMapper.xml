@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xy.mapper.BiyeCommentMapper">
+    <select id="selectall" resultMap="biyeComments">
+        select
+        biye_comment.*,
+        biye_user_comment.userId
+        from biye_comment,biye_user_comment
+        where biye_comment.commentId = biye_user_comment.commentId
+        and biye_comment.del = 0
+    </select>
+
+    <resultMap id="biyeComments" type="biyeComment">
+        <id property="commentId" column="commentId"/>
+        <result property="commentDesc" column="commentDesc"/>
+        <result property="newsId" column="newsId"/>
+        <result property="commentDate" column="commentDate"/>
+        <result property="likeNum" column="likeNum"/>
+
+        <association property="biyeUserComment" javaType="BiyeUserComment">
+            <id property="userId" column="userId"/>
+        </association>
+    </resultMap>
+
+    <update id="deletebyid">
+        UPDATE biye_comment SET del = 1 WHERE commentId = #{commentId}
+    </update>
+
+    <insert id="addComment" parameterType="uniquePojo">
+        insert into biye_comment(commentId,commentDesc,newsId) values(#{commentId},#{commentDesc},#{newsId})
+    </insert>
+
+    <insert id="addCommentUser" parameterType="uniquePojo">
+        insert into biye_user_comment(userId,commentId) values(#{userId},#{commentId})
+    </insert>
+
+    <insert id="addSComment" parameterType="sCommentPojo">
+        insert into biye_scomment(scommentId,scommentDesc,userId) values (#{scommentId},#{scommentDesc},#{userId})
+    </insert>
+
+    <insert id="addSComment2" parameterType="sCommentPojo">
+        insert into biye_comment_scomment(commentId,scommentId) values (#{commentId},#{scommentId})
+    </insert>
+
+    <select id="selectCommentByNewId" resultMap="xxxxx">
+        select
+        biye_user.username,
+        biye_user.userportrait,
+        biye_comment.*
+        from biye_user_comment
+        left join biye_comment
+        on biye_comment.commentId = biye_user_comment.commentId
+        left join biye_user
+        on biye_user.userId = biye_user_comment.userId
+        where newsId = #{newsId}
+        and del=0
+    </select>
+
+    <resultMap id="xxxxx" type="biyeComment2">
+        <id property="commentId" column="commentId"/>
+        <result property="commentDesc" column="commentDesc"/>
+        <result property="newsId" column="newsId"/>
+        <result property="commentDate" column="commentDate"/>
+        <result property="likeNum" column="likeNum"/>
+
+
+        <association property="biyeUser" javaType="BiyeUser">
+            <id property="userId" column="userId"/>
+            <result property="username" column="username"/>
+            <result property="userportrait" column="userportrait"/>
+        </association>
+    </resultMap>
+
+    <update id="giveALike" parameterType="string">
+    UPDATE biye_comment SET likeNum = likeNum + 1 WHERE commentId = #{commentId}
+    </update>
+
+    <update id="dianzhan" parameterType="string">
+    UPDATE biye_scomment SET likeNum = likeNum + 1 WHERE scommentId = #{scommentId}
+    </update>
+
+    <select id="selectSComment" parameterType="string" resultMap="selectSComment123">
+        select
+        biye_scomment.*,
+        biye_user.userportrait,
+        biye_user.username
+        from
+        biye_scomment,biye_user,biye_comment_scomment
+        where biye_scomment.userId = biye_user.userId
+        and biye_comment_scomment.scommentId = biye_scomment.scommentId
+        and commentId = #{commentId}
+    </select>
+
+    <resultMap id="selectSComment123" type="biyeScomment">
+        <id column="scommentId" property="scommentId"/>
+        <result column="scommentDesc" property="scommentDesc"/>
+        <result column="scommentDate" property="scommentDate"/>
+        <result column="likeNum" property="likeNum"/>
+
+        <association property="biyeUser" javaType="BiyeUser">
+            <id property="userId" column="userId"/>
+            <result property="username" column="username"/>
+            <result property="userportrait" column="userportrait"/>
+        </association>
+    </resultMap>
+
+</mapper>

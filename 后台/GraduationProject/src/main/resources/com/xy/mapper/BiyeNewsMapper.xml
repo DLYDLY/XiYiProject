@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xy.mapper.BiyeNewsMapper">
+    <insert id="insert" parameterType="biyeNews">
+        insert into biye_news (newsId, newsTitle) values (#{newsId},#{newsTitle});
+    </insert>
+
+    <select id="selectnews" parameterType="java.lang.String" resultType="java.lang.String">
+        select biye_news.newsID from biye_news where biye_news.newsTitle  like"%"#{value}"%" and state = 0
+    </select>
+
+    <insert id="userinsert" parameterType="biyeNews">
+    <selectKey keyProperty="newsId" order="BEFORE" resultType="string">
+        select replace(uuid(),'-','')
+    </selectKey>
+    insert into biye_news (newsID, newsTitle, newsContent, newsTypeId, userId) values
+    (#{newsId},#{newsTitle},#{newsContent},#{newsTypeId},#{userId});
+</insert>
+
+    <insert id="addimg" parameterType="biyeNewsImage">
+        <selectKey keyProperty="imageId" order="BEFORE" resultType="string">
+            select replace(uuid(),'-','')
+        </selectKey>
+        insert into biye_news_image (imageId, imagePath, newsId) values (#{imageId},#{imagePath},#{newsId});
+    </insert>
+
+    <select id="selectimagePath" parameterType="java.lang.String" resultType="java.lang.String">
+        select biye_news_image.imagePath from biye_news_image where imageId = #{value};
+    </select>
+    <select id="selectimagePathByNewsid" parameterType="java.lang.String" resultType="java.lang.String">
+        select biye_news_image.imagePath from biye_news_image where newsId = #{value};
+    </select>
+
+    <select id="selectimageId" parameterType="java.lang.String" resultType="java.lang.String">
+        select biye_news_image.imageId from biye_news_image where biye_news_image.newsId =#{value};
+    </select>
+
+    <select id="selectonenews" parameterType="java.lang.String" resultType="biyeNews">
+        select * from biye_news where biye_news.newsID = #{value};
+    </select>
+
+
+    <!--新闻置顶-->
+    <update id="stickNews" parameterType="string">
+      UPDATE biye_news SET newslsTop = 1 WHERE newsID = #{newsId};
+    </update>
+
+    <select id="seeTopNews" resultType="biyeNews" statementType="CALLABLE">
+        SELECT newsID,newsTitle,newslsTop,state FROM biye_news where state =0
+    </select>
+
+    <select id="searchBox" parameterType="string" resultType="biyeNews">
+        select newsID,newsTitle ,newslsTop,state from biye_news
+        where  newsTitle like"%"#{value}"%" and state =0
+    </select>
+
+    <select id="checkTopNews" resultType="string">
+      select  newsID from biye_news where newslsTop = 1 and state = 0
+    </select>
+
+    <select id="lookTopNews" resultType="biyeNews">
+        select  * from biye_news  where newslsTop = 1 and state = 0
+    </select>
+
+    <update id="soldOut" parameterType="string">
+        update biye_news set state = 1  where newsID = #{newsId} ;
+    </update>
+
+    <update id="cancelNew" parameterType="string">
+        update biye_news set newslsTop  = 0  where newsID = #{newsId} ;
+    </update>
+</mapper>

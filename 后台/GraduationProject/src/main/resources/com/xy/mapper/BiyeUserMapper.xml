@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xy.mapper.BiyeUserMapper">
+
+    <resultMap id="biyeUserMap" type="biyeUser">
+        <id property="userId" column="userId"></id>
+        <result property="username" column="username"></result>
+        <result property="password" column="password"></result>
+        <result property="userportrait" column="userportrait"></result>
+        <result property="phone" column="phone"></result>
+        <result property="email" column="email"></result>
+        <result property="created" column="created"></result>
+        <result property="updated" column="updated"></result>
+        <result property="opendId" column="opendId"></result>
+        <result property="graceId" column="graceId"></result>
+        <association property="biyeGrace" javaType="BiyeGrace">
+            <id property="gId" column="gId"></id>
+            <result property="graceName" column="graceName"></result>
+        </association>
+    </resultMap>
+
+    <!--查询所有用户信息-->
+    <select id="selectBiyeUserAll" resultMap="biyeUserMap">
+        select
+        u.userId,
+        u.username,
+        u.password,
+        u.userportrait,
+        u.phone,
+        u.email,
+        u.created,
+        u.updated,
+        u.opendId,
+        u.graceId,
+        g.gId,
+        g.graceName
+        from biye_user u,biye_grace g where u.graceId=g.gId and state=0
+    </select>
+
+    <!--根据ID查询用户信息-->
+    <select id="selectBiyeUserUserId" parameterType="string" resultMap="biyeUserMap">
+        select
+        u.userId,
+        u.username,
+        u.password,
+        u.userportrait,
+        u.phone,
+        u.email,
+        u.created,
+        u.updated,
+        u.opendId,
+        u.graceId,
+        g.gId,
+        g.graceName
+        from biye_user u,biye_grace g where u.graceId=g.gId and userId=#{userId} and state=0
+    </select>
+
+    <!--根据opendid查询用户-->
+    <select id="selectUserByOpendId" parameterType="string" resultMap="biyeUserMap">
+        SELECT
+            u.userId,
+            u.username,
+            u.userportrait,
+            u.password,
+            u.phone,
+            u.email,
+            u.created,
+            u.updated,
+            u.opendId,
+            u.graceId,
+            g.gId,
+            g.graceName
+        FROM biye_user u,biye_grace g WHERE u.graceId=g.gId AND state=0 AND opendId= #{opendId}
+    </select>
+
+    <!--注销用户-->
+    <update id="cancelBiyeUserUserId" parameterType="string">
+        update biye_user set state=1 where userId=#{userId}
+    </update>
+
+    <!--修改信息-->
+    <update id="updateBiyeUserUserId" parameterType="biyeUser">
+        update biye_user set
+        username=#{username},userportrait=#{userportrait},phone=#{phone},email=#{email},updated=now()
+      where userId=#{userId}
+    </update>
+
+    <!--邮箱验证-->
+    <select id="checkOutEmail" parameterType="string" resultType="string">
+        select email from biye_user where  email = #{email}
+    </select>
+
+    <!--添加用户-->
+    <insert id="addUser" parameterType="biyeUser">
+        INSERT INTO biye_user(userId,username,userportrait,PASSWORD,phone,email,opendId) VALUES(#{userId},#{username},#{userportrait},#{password},#{phone},#{email},#{opendId})
+    </insert>
+
+</mapper>

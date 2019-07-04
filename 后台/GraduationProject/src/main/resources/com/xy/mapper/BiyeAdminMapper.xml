@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xy.mapper.BiyeAdminMapper">
+
+    <!--查询所有管理员信息-->
+    <select id="selectBiyeAdminAll" resultType="biyeAdmin">
+        select * from biye_admin
+    </select>
+
+    <!--根据ID查询管理员信息-->
+    <select id="selectBiyeAdminAdminId" parameterType="string" resultMap="selectBiyeAdminAdminIdMap">
+        select
+        biye_admin.adminId,
+        biye_admin.adminName,
+        biye_admin.adminPassword,
+        biye_roles.roleId,
+        biye_roles.roleName
+        from biye_admin_role
+        left join  biye_admin
+        on  biye_admin.adminId = biye_admin_role.adminId
+        left join biye_roles
+        on biye_roles.roleId = biye_admin_role.roleId
+        where biye_admin.adminId=#{adminId}
+    </select>
+
+
+    <resultMap id="selectBiyeAdminAdminIdMap" type="biyeAdmin">
+        <id property="adminId" column="adminId"></id>
+        <result property="adminName" column="adminName"></result>
+        <result property="adminPassword" column="adminPassword"></result>
+
+        <collection property="roles" ofType="BiyeRoles">
+            <id property="roleId" column="roleId"></id>
+            <result property="roleName" column="roleName"></result>
+        </collection>
+    </resultMap>
+
+    <!--修改信息-->
+    <update id="updateBiyeAdminAdminId" parameterType="biyeAdmin">
+        update biye_admin set adminName=#{adminName},adminPassword=#{adminPassword}
+				where adminId=#{adminId}
+    </update>
+
+    <!--删除管理信息-->
+    <delete id="deleteBiyeAdminAdminId" parameterType="string">
+        delete from biye_admin where adminId=#{adminId}
+    </delete>
+
+
+    <delete id="deleteAdminRoles" parameterType="string">
+        delete from biye_admin_role where adminId=#{adminId}
+    </delete>
+
+    <!--添加管理信息-->
+    <insert id="savaBiyeAdmin" parameterType="biyeAdmin">
+        insert into
+		biye_admin(adminId,adminName,adminPassword) values
+		(#{adminId},#{adminName},#{adminPassword})
+    </insert>
+
+    <!--登录验证-->
+    <select id="login" parameterType="biyeAdmin" resultType="biyeAdmin">
+        select  * from biye_admin where adminName = #{adminName} and  adminPassword= #{adminPassword}
+    </select>
+
+</mapper>

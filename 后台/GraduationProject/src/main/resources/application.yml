@@ -1,0 +1,55 @@
+logging:
+  config: classpath:log/logback-spring.xml
+  path: D:/nmyslog/nmys
+  level.com.xy: debug
+
+server:
+  port: 8080
+  tomcat:
+    uri-encoding: utf-8
+
+spring:
+  mvc:
+    view:
+      prefix: /
+      suffix: .html
+  thymeleaf:
+    prefix: classpath:/templates/
+  filters: stat,wall,logback
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql://120.79.162.68:3306/biye_lxk?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+
+  redis:
+    cluster:
+      nodes: 120.79.162.68:7001,120.79.162.68:7002,120.79.162.68:7003,120.79.162.68:7004,120.79.162.68:7005,120.79.162.68:7006
+      command-timeout: 30000
+      max-attempts: 5
+      max-redirects: 3
+      max-active: 16
+      max-wait: -1
+      max-idle: 8
+      min-idle: 0
+      test-on-borrow: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+
+
+mybatis:
+  config-location: classpath:mybatis/SqlMapConfig.xml
+  typeAliasesPackage: com.xy.pojo
+  mapper-Locations: classpath:mapper/**/*
+
+wx:
+  APPID: wx918ae7cb5a65c8ae
+  APPSecret: 236717a8b68ad0b30e05daccfd543daf
+  USER_INFO: SESSION
+
+jwt:
+  secret: JO6HN3NGIU25G2FIG8V7VD6CK9B6T2Z5
+  expire: 60000

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xy.mapper.BiyeColletNewsMapper">
+    <select id="selectCollectNews" resultType="string" parameterType="string">
+        select a.newsID from biye_collect_news a , biye_news b where a . newsId = b.newsId  AND b.state=0  and
+        a.userId = #{userId}
+    </select>
+    <select id="selectByNews" parameterType="biyeCollectNews" resultType="long">
+        select  collectId from biye_collect_news where newsID = #{newsId} and userId = #{userId}
+    </select>
+    <insert id="userAddColletNews" parameterType="biyeCollectNews">
+        insert  into  biye_collect_news(newsID, userId) values(#{newsId},#{userId})
+    </insert>
+    <delete id="deleteCollectNews" parameterType="long">
+        delete from biye_collect_news where collectId = #{Id}
+    </delete>
+
+    <select id="selectNewsNum" resultType="int">
+        select count(*) from biye_news
+    </select>
+
+    <select id="selectUserNum" resultType="int">
+        select count(*) from biye_user
+    </select>
+
+    <select id="selectOne" parameterType="string" resultType="BiyeCollectNews">
+        SELECT * FROM biye_collect_news WHERE newsID = #{newsID} AND userId = #{userId}
+    </select>
+</mapper>
